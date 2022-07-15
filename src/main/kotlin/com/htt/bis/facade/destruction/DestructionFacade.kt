@@ -5,18 +5,14 @@ import com.htt.bis.annotation.UserAuthorization
 import com.htt.bis.common.containsIgnoreCaseOrNull
 import com.htt.bis.common.eqOrNull
 import com.htt.bis.domain.*
+import com.htt.bis.domain.core.SimpleEntity
 import com.htt.bis.dto.database.PhotoDto
-import com.htt.bis.dto.destruction.CreateDestructionRequest
-import com.htt.bis.dto.destruction.DestructionDto
-import com.htt.bis.dto.destruction.DestructionFilterDTO
-import com.htt.bis.dto.destruction.ProcessItemDto
+import com.htt.bis.dto.database.simple.SimpleEntityDto
+import com.htt.bis.dto.destruction.*
 import com.htt.bis.exception.ImageNotFoundException
 import com.htt.bis.facade.ifFound
 import com.htt.bis.service.AuthenticationService
-import com.htt.bis.service.database.DestructionService
-import com.htt.bis.service.database.ExplosiveUnitService
-import com.htt.bis.service.database.ObstacleService
-import com.htt.bis.service.database.ProcessItemService
+import com.htt.bis.service.database.*
 import com.htt.bis.service.storage.PhotoService
 import com.htt.bis.service.storage.StorageService
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -36,7 +32,8 @@ class DestructionFacade(
     private val explosiveUnitService: ExplosiveUnitService,
     private val obstacleService: ObstacleService,
     private val authenticationService: AuthenticationService,
-    private val processItemService: ProcessItemService
+    private val processItemService: ProcessItemService,
+    private val simpleEntityService: SimpleEntityService
 ) {
     var logger: Logger = LoggerFactory.getLogger(DestructionFacade::class.java)
 
@@ -44,6 +41,7 @@ class DestructionFacade(
     fun getAllDestructions(destructionFilterDTO: DestructionFilterDTO, page: Int, size: Int, sort: List<String>?): Page<DestructionDto> {
         logger.info("Getting page $page from Destruction")
         val query = prepareFilterQuery(destructionFilterDTO)
+        println(query)
         return destructionService.getAll(query, page, size, sort).map {
             mapDestructionToDestructionDto(it)
         }
@@ -94,17 +92,24 @@ class DestructionFacade(
         }
     }
 
-    @UserAuthorization
+      @UserAuthorization
     fun createDestruction(createDestructionRequest: CreateDestructionRequest): Long {
         logger.info("Creating Destruction with name ${createDestructionRequest.localization}")
         val currentUser = authenticationService.getCurrentLoggedUserId()
 
         var explosiveUnit: ExplosiveUnit? = null
+        var secondExplosiveUnit: ExplosiveUnit? = null
         var obstacle: Obstacle? = null
 
         if (createDestructionRequest.explosiveUnitId != null) {
             explosiveUnitService.getById(createDestructionRequest.explosiveUnitId!!).ifFound {
                 explosiveUnit = it
+            }
+        }
+
+        if (createDestructionRequest.secondExplosiveUnitId != null) {
+            explosiveUnitService.getById(createDestructionRequest.secondExplosiveUnitId!!).ifFound {
+                secondExplosiveUnit = it
             }
         }
 
@@ -116,11 +121,25 @@ class DestructionFacade(
 
         val processItems = mutableListOf<ProcessItem>()
         val photosBefore = mutableListOf<Photo>()
+        val additionalItems = mutableSetOf<SimpleEntity>()
+        val secondAdditionalItems = mutableSetOf<SimpleEntity>()
         var photosBeforeCount = 0
         val photosAfter = mutableListOf<Photo>()
         var photosAfterCount = 0
 
+        createDestructionRequest.additionalItems.forEach {
+            simpleEntityService.getById(it.simpleEntityId).ifFound { simpleEntity ->
+                additionalItems.add(simpleEntity)
+            }
+        }
 
+        if(createDestructionRequest.secondAdditionalItems!=null) {
+            createDestructionRequest.secondAdditionalItems!!.forEach {
+                simpleEntityService.getById(it.simpleEntityId).ifFound { simpleEntity ->
+                    secondAdditionalItems.add(simpleEntity)
+                }
+            }
+        }
 
         val destructionToSave = Destruction(
             go = createDestructionRequest.goOnNo,
@@ -132,10 +151,12 @@ class DestructionFacade(
             date = LocalDateTime.parse(createDestructionRequest.date?.replace("Z", "")),
             createdBy = currentUser.toString(),
             creationDate = LocalDateTime.now(),
+            secondExplosiveUnit = secondExplosiveUnit,
             recommendations = createDestructionRequest.recommendation,
             obstacle = obstacle,
-            explosiveUnit = explosiveUnit
-
+            explosiveUnit = explosiveUnit,
+            secondAdditionalItems = secondAdditionalItems,
+            additionalItems = additionalItems
             )
 
         var savedDestruction = destructionService.add(destructionToSave)
@@ -189,6 +210,13 @@ class DestructionFacade(
 
     private fun mapDestructionToDestructionDto(destruction: Destruction): DestructionDto {
 
+        val additionalItems = destruction.additionalItems.map{
+            SimpleEntityDto(id = it.id,name=it.name, categoryName = it.category.name)
+        }
+
+        val secondAdditionalItems = destruction.secondAdditionalItems.map{
+            SimpleEntityDto(id = it.id, name=it.name, categoryName = it.category.name)
+        }
         val processItems = destruction.processItems.map {
             ProcessItemDto(description = it.description, title = it.title, time = it.time)
         }.toList()
@@ -204,27 +232,31 @@ class DestructionFacade(
             performerId = destruction.performer,
             place = destruction.place,
             recommendations = destruction.recommendations,
-            mountType = destruction.mountType,
-            expectedEffect = destruction.expectedEffect,
             seal = destruction.seal,
             obstacleId = destruction.obstacle?.id,
             explosiveUnitId = destruction.explosiveUnit?.id,
             go = destruction.go,
             processItems = processItems,
-            twoStage = destruction.twoStage
+            twoStage = destruction.twoStage,
+            additionalItems = additionalItems,
+            secondAdditionalItems = secondAdditionalItems,
+            secondExplosiveUnitId = destruction.secondExplosiveUnit?.id
 
             )
     }
 
-    private fun prepareFilterQuery(filter: DestructionFilterDTO): BooleanExpression {
-        val qDestruction: QDestruction = QDestruction.destruction
 
-        return qDestruction.id.isNotNull
-            .and(qDestruction.description.containsIgnoreCaseOrNull(filter.q))
-            .and(qDestruction.place.containsIgnoreCaseOrNull(filter.q))
-            .and(qDestruction.destructionType.eqOrNull(filter.destructionType))
-            .and(qDestruction.performer.eqOrNull(filter.performerId))
-            .and(qDestruction.go.eqOrNull(filter.go))
-            .and(qDestruction.twoStage.eqOrNull(filter.twoStage))
-    }
+}private fun prepareFilterQuery(filter: DestructionFilterDTO): BooleanExpression {
+    val qDestruction: QDestruction = QDestruction.destruction
+
+    return qDestruction.id.isNotNull
+        .and(qDestruction.description.containsIgnoreCaseOrNull(filter.q))
+        .and(qDestruction.place.containsIgnoreCaseOrNull(filter.q))
+        .and(qDestruction.destructionType.eqOrNull(filter.destructionType))
+        .and(qDestruction.performer.eqOrNull(filter.performerId))
+        .and(qDestruction.go.eqOrNull(filter.go))
+        .and(qDestruction.twoStage.eqOrNull(filter.twoStage))
+        .and(qDestruction.explosiveUnit.id.eqOrNull(filter.explosiveUnitId))
+        .or(qDestruction.secondExplosiveUnit.id.eqOrNull(filter.explosiveUnitId))
+        .and(qDestruction.obstacle.id.eqOrNull(filter.obstacleId))
 }

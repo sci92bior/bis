@@ -165,5 +165,58 @@ class ErrorResponse {
         }
     }
 
+    object Category {
+
+        //MESSAGES
+        const val CATEGORY_ALREADY_EXIST_MESSAGE = "Category already exists"
+
+        //CODES
+        const val CATEGORY_ALREADY_EXIST_CODE = 601
+
+        fun alreadyExists(details: String?): ErrorResponse {
+            return ErrorResponse(CATEGORY_ALREADY_EXIST_MESSAGE, details, CATEGORY_ALREADY_EXIST_CODE, HttpStatus.BAD_REQUEST)
+        }
+
+    }
+
+    object SimpleEntity {
+
+        //MESSAGES
+        const val SIMPLE_ENTITY_ALREADY_EXIST_MESSAGE = "Simple entity already exists"
+
+        //CODES
+        const val SIMPLE_ENTITY_ALREADY_EXIST_CODE = 701
+
+        fun alreadyExists(details: String?): ErrorResponse {
+            return ErrorResponse(SIMPLE_ENTITY_ALREADY_EXIST_MESSAGE, details, SIMPLE_ENTITY_ALREADY_EXIST_CODE, HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    object Course {
+
+        //MESSAGES
+        const val COURSE_ALREADY_EXIST_MESSAGE = "Course already exists"
+
+        //CODES
+        const val COURSE_SIMPLE_ENTITY_ALREADY_EXIST_CODE = 801
+
+        fun alreadyExists(details: String?): ErrorResponse {
+            return ErrorResponse(COURSE_ALREADY_EXIST_MESSAGE, details, COURSE_SIMPLE_ENTITY_ALREADY_EXIST_CODE, HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    object Exercise {
+
+        //MESSAGES
+        const val EXERCISE_CREATION_ERROR_MESSAGE = "Exercise creation error"
+
+        //CODES
+        const val EXERCISE_CREATION_ERROR_CODE = 901
+
+        fun creationError(details: String?): ErrorResponse {
+            return ErrorResponse(EXERCISE_CREATION_ERROR_MESSAGE, details, EXERCISE_CREATION_ERROR_CODE, HttpStatus.BAD_REQUEST)
+        }
+    }
+
 
 }

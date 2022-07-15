@@ -45,3 +45,11 @@ fun <T> ComparableExpression<T>.goeOrNull(right: T?): BooleanExpression? where T
         this.goe(right)
     }
 }
+
+fun <T> ComparableExpression<T>.loeOrNull(right: T?): BooleanExpression? where T : Comparable<*> {
+    return if (right == null) {
+        null
+    } else {
+        this.loe(right)
+    }
+}

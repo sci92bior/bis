@@ -2,11 +2,15 @@ package com.htt.bis.controller.user
 
 import com.htt.bis.config.JWT_TOKEN_API_KEY_NAME
 import com.htt.bis.domain.Role
+import com.htt.bis.dto.course.CourseFilter
 import com.htt.bis.dto.database.EntityFilter
 import com.htt.bis.dto.user.CreateUserRequest
 import com.htt.bis.dto.user.UpdateUserRequest
 import com.htt.bis.dto.user.UserDTO
+import com.htt.bis.dto.user.UserFilter
+import com.htt.bis.editors.CourseFilterEditor
 import com.htt.bis.editors.EntityFilterEditor
+import com.htt.bis.editors.UserFilterEditor
 import com.htt.bis.facade.user.UserFacade
 import io.swagger.annotations.*
 import org.springframework.http.HttpStatus
@@ -26,8 +30,9 @@ internal class UserController(
 
     @InitBinder
     fun initBinder(binder: WebDataBinder) {
-        binder.registerCustomEditor(EntityFilter::class.java, EntityFilterEditor())
+        binder.registerCustomEditor(UserFilter::class.java, UserFilterEditor())
     }
+
 
     @ApiOperation(value = "Get all users", authorizations = [Authorization(JWT_TOKEN_API_KEY_NAME)])
     @ApiResponses(
@@ -39,12 +44,10 @@ internal class UserController(
     @CrossOrigin
     fun getAllUsers(@RequestParam pageNo: Int?,
                     @RequestParam pageSize: Int?,
-                    @RequestParam(value = "filter", required = false) filter: EntityFilter?): ResponseEntity<Any> {
-        return if(pageNo!=null && pageSize!=null) {
-            ResponseEntity(userFacade.getAllUsers(pageNo, pageSize), HttpStatus.OK)
-        }else{
-            ResponseEntity(userFacade.getUsersById(filter!!.ids!!), HttpStatus.OK)
-        }
+                    @RequestParam(value = "filter", required = false) filter: UserFilter?): ResponseEntity<Any> {
+
+    return ResponseEntity(userFacade.getAllUsers(filter, pageNo, pageSize), HttpStatus.OK)
+
     }
 
     @ApiOperation(value = "Get all users", authorizations = [Authorization(JWT_TOKEN_API_KEY_NAME)])

@@ -1,12 +1,17 @@
 package com.htt.bis.mapper
 
-import com.htt.bis.domain.core.InitiationSystem
-import com.htt.bis.dto.database.SimpleItemDto
+import com.htt.bis.domain.ExplosiveUnit
+import com.htt.bis.domain.core.Category
+import com.htt.bis.dto.database.explosive_unit.ExplosiveUnitDto
+import com.htt.bis.dto.database.simple.CategoryDto
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.mapstruct.Mappings
 
 @Mapper(componentModel = "spring")
-interface InitiationSystemMapper {
-    fun initiationSystemToSimpleItemDtoMapper(initiationSystem: InitiationSystem): SimpleItemDto
+interface CategoryMapper {
+
+    fun categoryToCategoryDto(category: Category): CategoryDto
 
 }
 

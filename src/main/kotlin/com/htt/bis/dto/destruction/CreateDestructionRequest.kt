@@ -17,6 +17,8 @@ data class CreateDestructionRequest(
     var performerId : String,
     var description : String? = null,
     var localization : String? = null,
+    var additionalItems : List<CreateAdditionalItemRelationRequest>,
+    var secondAdditionalItems : List<CreateAdditionalItemRelationRequest>? = null,
     val photosBefore: List< CreatePhotoWithDescriptionRequest>,
     val photosAfter: List< CreatePhotoWithDescriptionRequest>,
     val processItems: List<ProcessItemDto>,

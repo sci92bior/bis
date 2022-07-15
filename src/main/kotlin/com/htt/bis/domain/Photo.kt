@@ -3,6 +3,7 @@ package com.htt.bis.domain
 import com.htt.bis.domain.ExplosiveUnit
 import com.htt.bis.domain.Obstacle
 import com.htt.bis.domain.core.BuildMaterial
+import com.htt.bis.domain.core.Category
 import com.htt.bis.domain.core.SimpleEntity
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -68,5 +69,9 @@ data class Photo(
     @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "id_simpleEntity_photo", referencedColumnName = "id")
     val simpleEntity: SimpleEntity? = null,
+
+    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @JoinColumn(name = "id_category_photo", referencedColumnName = "id")
+    val category: Category? = null,
 
     )

@@ -1,8 +1,10 @@
 package com.htt.bis.domain.core
 
 import com.htt.bis.domain.BaseEntity
+import com.htt.bis.domain.Photo
 import com.htt.bis.domain.course.Course
 import org.hibernate.Hibernate
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
@@ -16,6 +18,15 @@ data class Category(
     @Column(name = "name")
     @field: NotNull
     var name: String,
+
+    @Column(name = "creation_date")
+    var creationDate: LocalDateTime,
+
+    @Column(name = "created_by")
+    var createdBy: String,
+
+    @OneToOne(mappedBy = "category")
+    var photo: Photo? = null,
 
     ) : BaseEntity<Long>(){
 

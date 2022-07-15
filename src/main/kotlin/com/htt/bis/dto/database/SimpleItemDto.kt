@@ -8,5 +8,4 @@ data class SimpleItemDto(
     var id : Long? = null,
     var name : String? = null,
     var isApproved: Boolean? = null,
-
 )

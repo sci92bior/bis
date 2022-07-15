@@ -104,10 +104,6 @@ class BuildMaterialFacade(
             val userId = authenticationService.getCurrentLoggedUserId()
             val buildMaterialToUpdate = it.copy(id = it.id, name = updateBuildMaterialRequest.name!!, aFactor = updateBuildMaterialRequest.aFactor!!,
              isApproved = updateBuildMaterialRequest.isApproved!!, updateDate = LocalDateTime.now(),updatedBy = userId.toString())
-
-           /* if(updateBuildMaterialRequest.photoBase64!=null){
-                storageService.uploadDatabaseImage(ObjectType.EXPLOSIVE_MATERIAL.bucket,updateBuildMaterialRequest.photoBase64, id.toString())
-            }*/
             return buildMaterialMapper.buildMaterialObjectToBuildMaterialDTO(buildMaterialService.update(buildMaterialToUpdate))
         }
     }

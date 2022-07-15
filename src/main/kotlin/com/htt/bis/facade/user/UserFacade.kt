@@ -5,6 +5,7 @@ import com.htt.bis.domain.User
 import com.htt.bis.dto.user.CreateUserRequest
 import com.htt.bis.dto.user.UpdateUserRequest
 import com.htt.bis.dto.user.UserDTO
+import com.htt.bis.dto.user.UserFilter
 import com.htt.bis.facade.Facade
 import com.htt.bis.facade.ifFound
 import com.htt.bis.service.KeycloakRoleService
@@ -29,14 +30,27 @@ class UserFacade(
     private val userService: UserService
 ) {
 
-    fun getAllUsers(pageNo: Int, pageSize: Int): Page<UserDTO> {
-        val userList = keycloakUserService.findAll().ifFound { list ->
-            list.map {
-                mapKeycloakUserToUserDTO(it)
+    fun getAllUsers(filter : UserFilter?, pageNo: Int?, pageSize: Int?): Any {
+
+        if(filter!!.ids!=null){
+            return getUsersById(filter.ids!!)
+        }else if(filter.role!=null){
+            val userList = keycloakRoleService.findUsersByRole(filter.role).ifFound { list ->
+                list.map {
+                    mapKeycloakUserToUserDTO(it)
+                }
             }
+            val pageable: Pageable = PageRequest.of(pageNo!!, pageSize!!)
+            return PageImpl(userList, pageable, userList.count().toLong())
+        }else {
+            val userList = keycloakUserService.findAll().ifFound { list ->
+                list.map {
+                    mapKeycloakUserToUserDTO(it)
+                }
+            }
+            val pageable: Pageable = PageRequest.of(pageNo!!, pageSize!!)
+            return PageImpl(userList, pageable, userList.count().toLong())
         }
-        val pageable: Pageable = PageRequest.of(pageNo, pageSize)
-        return PageImpl(userList, pageable, userList.count().toLong())
     }
 
     fun getUsersById(ids : Array<String>): List<UserDTO> {

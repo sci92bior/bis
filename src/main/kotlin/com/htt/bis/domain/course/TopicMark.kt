@@ -16,11 +16,19 @@ data class TopicMark(
     @Column(name = "create_date")
     val createDate : LocalDateTime,
 
+    @Column(name = "description")
+    val description : String,
+
+    @Column(name = "is_plus")
+    val isPlus : Boolean,
+
     @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "topic_id")
     var topic: Topic,
 
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "user_id")
-    var user: User
+    @Column(name = "student_id")
+    var studentId: String,
+
+    @Column(name = "instructor_id")
+    var instructor: String
 ): BaseEntity<Long>()

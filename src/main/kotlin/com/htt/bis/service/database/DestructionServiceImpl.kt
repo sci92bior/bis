@@ -14,35 +14,35 @@ import javax.transaction.Transactional
 @Service
 @Transactional
 class DestructionServiceImpl(
-    private val buildMaterialRepository: DestructionRepository,
+    private val destructionRepository: DestructionRepository,
     private val sortService: SortService,
 ) : DestructionService {
 
     override fun getAll(query: BooleanExpression, page : Int, size: Int, sortStrings: List<String>?): Page<Destruction> {
         val sort = sortService.buildSortFromSortStrings(sortStrings, Destruction::class.java)
-        return buildMaterialRepository.findAll(query,PageRequest.of(page, size, sort))
+        return destructionRepository.findAll(query,PageRequest.of(page, size, sort))
     }
 
     override fun getById(id: Long): Destruction? {
-        return buildMaterialRepository.findByIdOrNull(id)
+        return destructionRepository.findByIdOrNull(id)
     }
 
     override fun add(model: Destruction): Destruction {
-        return buildMaterialRepository.save(model)
+        return destructionRepository.save(model)
     }
 
     override fun update(model: Destruction): Destruction {
-        return buildMaterialRepository.save(model)
+        return destructionRepository.save(model)
     }
 
     override fun delete(id: Long) {
         getById(id).ifFound {
-            buildMaterialRepository.delete(it)
+            destructionRepository.delete(it)
         }
     }
 
     override fun count() : Long {
-       return buildMaterialRepository.count()
+       return destructionRepository.count()
     }
 
 }

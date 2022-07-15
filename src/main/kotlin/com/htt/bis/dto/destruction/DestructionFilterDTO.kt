@@ -10,5 +10,8 @@ data class DestructionFilterDTO(
     var performer : String? = null,
     var place : String? = null,
     var go: Boolean? = null,
-    var twoStage: Boolean? = null
+    var twoStage: Boolean? = null,
+    var explosiveUnitId : Long? = null,
+    var obstacleId: Long? = null
+
 )

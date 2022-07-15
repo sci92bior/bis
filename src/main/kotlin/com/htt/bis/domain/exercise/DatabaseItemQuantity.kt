@@ -3,8 +3,8 @@ package com.htt.bis.domain.exercise
 import com.htt.bis.domain.BaseEntity
 import com.htt.bis.domain.ExplosiveMaterial
 import com.htt.bis.domain.ExplosiveUnit
-import com.htt.bis.domain.core.Ammunition
-import com.htt.bis.domain.core.InitiationSystem
+import com.htt.bis.domain.core.SimpleEntity
+import com.htt.bis.domain.course.Topic
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
@@ -16,20 +16,16 @@ data class DatabaseItemQuantity(
     override val id: Long? = null,
 
     @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinColumn(name = "id_explosive_material_quantity", referencedColumnName = "id")
-    val explosiveMaterial: ExplosiveMaterial? = null,
-
-    @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinColumn(name = "id_ammo_quantity", referencedColumnName = "id")
-    val ammo: Ammunition? = null,
-
-    @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinColumn(name = "id_initiation_system_quantity", referencedColumnName = "id")
-    val initiationSystem: InitiationSystem? = null,
+    @JoinColumn(name = "id_simple_entity_quantity", referencedColumnName = "id")
+    val simpleEntity: SimpleEntity? = null,
 
     @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "id_explosive_unit_quantity", referencedColumnName = "id")
     val explosiveUnit: ExplosiveUnit? = null,
+
+    @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @JoinColumn(name = "id_explosive_material_quantity", referencedColumnName = "id")
+    val explosiveMaterial: ExplosiveMaterial? = null,
 
     @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "id_exercise", referencedColumnName = "id")

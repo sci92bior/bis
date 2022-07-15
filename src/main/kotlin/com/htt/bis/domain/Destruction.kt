@@ -33,18 +33,6 @@ data class Destruction(
     @Column(name = "date")
     var date: LocalDateTime,
 
-    @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "id_mount_type", referencedColumnName = "id")
-    var mountType: MountType? = null,
-
-    @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "id_expected_effect", referencedColumnName = "id")
-    var expectedEffect: ExpectedEffect? = null,
-
-    @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "id_expected_behaviour", referencedColumnName = "id")
-    var expectedBehaviour: ExpectedBehaviour? = null,
-
     @Column(name = "seal")
     @Min(0)
     @Max(100)
@@ -58,22 +46,6 @@ data class Destruction(
     @JoinColumn(name = "explosive_unit_id")
     val explosiveUnit: ExplosiveUnit? = null,
 
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "initial_system_id")
-    val initialSystem: InitiationSystem? = null,
-
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "tool_id")
-    val tool: Tool? = null,
-
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "gun_id")
-    val gun: Gun? = null,
-
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "ammo_id")
-    val ammo: Ammunition? = null,
-
     @Column(name = "go")
     val go: Boolean = false,
 
@@ -84,19 +56,19 @@ data class Destruction(
     @JoinColumn(name = "second_explosive_unit_id")
     val secondExplosiveUnit: ExplosiveUnit? = null,
 
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "second_tool_id")
-    val secondTool: Tool? = null,
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "id_additional_item")
+    val additionalItems: MutableSet<SimpleEntity> = mutableSetOf(),
 
-    @ManyToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "second_gun_id")
-    val secondGun: Gun? = null,
-
-    @Column(name = "creation_date")
-    var creationDate: LocalDateTime,
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "id_second_additional_item")
+    val secondAdditionalItems: MutableSet<SimpleEntity> = mutableSetOf(),
 
     @Column(name = "update_date")
     var updateDate: LocalDateTime? = null,
+
+    @Column(name = "creation_date")
+    var creationDate: LocalDateTime,
 
     @Column(name = "created_by")
     var createdBy: String,

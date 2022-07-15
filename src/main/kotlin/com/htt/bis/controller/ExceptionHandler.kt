@@ -77,4 +77,32 @@ class ExceptionHandler {
         return ResponseEntity(errorResponse, errorResponse.httpStatus)
     }
 
+    @ExceptionHandler(CategoryAlreadyExistException::class)
+    fun handleCategoryAlreadyExistException(ex: CategoryAlreadyExistException): ResponseEntity<ErrorResponse> {
+        logger.error("Category already exists: ${ex.message}")
+        val errorResponse = ErrorResponse.Category.alreadyExists(ex.message)
+        return ResponseEntity(errorResponse, errorResponse.httpStatus)
+    }
+
+    @ExceptionHandler(SimpleEntityAlreadyExistException::class)
+    fun handleSimpleEntityAlreadyExistException(ex: SimpleEntityAlreadyExistException): ResponseEntity<ErrorResponse> {
+        logger.error("Simple entity already exists: ${ex.message}")
+        val errorResponse = ErrorResponse.SimpleEntity.alreadyExists(ex.message)
+        return ResponseEntity(errorResponse, errorResponse.httpStatus)
+    }
+
+    @ExceptionHandler(CourseAlreadyExistException::class)
+    fun handleCourseAlreadyExistException(ex: CourseAlreadyExistException): ResponseEntity<ErrorResponse> {
+        logger.error("Simple entity already exists: ${ex.message}")
+        val errorResponse = ErrorResponse.Course.alreadyExists(ex.message)
+        return ResponseEntity(errorResponse, errorResponse.httpStatus)
+    }
+
+    @ExceptionHandler(ExerciseCreationException::class)
+    fun handleExerciseCreationException(ex: ExerciseCreationException): ResponseEntity<ErrorResponse> {
+        logger.error("Error during exercise creation: ${ex.message}")
+        val errorResponse = ErrorResponse.Course.alreadyExists(ex.message)
+        return ResponseEntity(errorResponse, errorResponse.httpStatus)
+    }
+
 }

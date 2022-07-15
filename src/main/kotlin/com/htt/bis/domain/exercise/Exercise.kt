@@ -2,7 +2,9 @@ package com.htt.bis.domain.exercise
 
 import com.htt.bis.domain.BaseEntity
 import com.htt.bis.domain.Destruction
+import com.htt.bis.domain.ExplosiveUnit
 import com.htt.bis.domain.User
+import com.htt.bis.domain.course.Topic
 import com.htt.bis.domain.exercise.DatabaseItemQuantity
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -22,7 +24,23 @@ data class Exercise(
     val startDate: LocalDateTime,
 
     @Column(name = "end_date")
-    val endDate: LocalDateTime
+    val endDate: LocalDateTime,
+
+    @Column(name = "update_date")
+    var updateDate: LocalDateTime? = null,
+
+    @Column(name = "creation_date")
+    var creationDate: LocalDateTime,
+
+    @Column(name = "created_by")
+    var createdBy: String,
+
+    @Column(name = "updated_by")
+    var updatedBy: String? = null,
+
+    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @JoinColumn(name = "id_topic_exercise", referencedColumnName = "id")
+    val topic: Topic? = null
 ) : BaseEntity<Long>(){
     @OneToMany(mappedBy = "exercise")
     val databaseItems: MutableSet<DatabaseItemQuantity> = mutableSetOf()
